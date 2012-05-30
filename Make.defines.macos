@@ -4,7 +4,7 @@
 # C programs using gcc.
 
 WKDIR=$(PWD)/..
-CC=gcc
+CC=clang
 COMPILE.c=$(CC) $(CFLAGS) $(CPPFLAGS) -c
 LINK.c=$(CC) $(CFLAGS) $(CPPFLAGS) $(LDDIR) $(LDFLAGS)
 LDDIR=-L../lib
