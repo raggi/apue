@@ -8,6 +8,7 @@
 #define CMSG_LEN(x)	_CMSG_DATA_ALIGN(sizeof(struct cmsghdr)+(x))
 #elif !defined(BSD)
 #define _XOPEN_SOURCE	600	/* Single UNIX Specification, Version 3 */
+#define _DARWIN_C_SOURCE 1 /* OSX >= 10.4 - see compat(5) for more info */
 #endif
 
 #include <sys/types.h>		/* some systems still require this */
