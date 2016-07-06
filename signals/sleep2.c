@@ -11,12 +11,12 @@ sig_alrm(int signo)
 }
 
 unsigned int
-sleep2(unsigned int nsecs)
+sleep2(unsigned int seconds)
 {
 	if (signal(SIGALRM, sig_alrm) == SIG_ERR)
-		return(nsecs);
+		return(seconds);
 	if (setjmp(env_alrm) == 0) {
-		alarm(nsecs);		/* start the timer */
+		alarm(seconds);		/* start the timer */
 		pause();			/* next caught signal wakes us up */
 	}
 	return(alarm(0));		/* turn off timer, return unslept time */

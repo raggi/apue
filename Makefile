@@ -1,31 +1,13 @@
-DIRS = lib sockets advio call calld daemons datafiles db environ exercises \
-	file ipc ipp lock mycat open opend opend.fe open.fe proc pty \
-	sess signals std stdio streams termios threadctl threads
+DIRS = lib intro sockets advio daemons datafiles db environ \
+	fileio filedir ipc1 ipc2 proc pty relation signals standards \
+	stdio termios threadctl threads printer exercises
 
 all:
-	$(MAKE) `./systype.sh`
+	for i in $(DIRS); do \
+		(cd $$i && echo "making $$i" && $(MAKE) ) || exit 1; \
+	done
 
 clean:
 	for i in $(DIRS); do \
-		(cd $$i && $(MAKE) -f `../systype.sh`.mk clean) || exit 1; \
-	done
-
-freebsd:
-	for i in $(DIRS); do \
-		(cd $$i && $(MAKE) -f freebsd.mk) || exit 1; \
-	done
-
-linux:
-	for i in $(DIRS); do \
-		(cd $$i && $(MAKE) -f linux.mk) || exit 1; \
-	done
-
-macos:
-	for i in $(DIRS); do \
-		(cd $$i && $(MAKE) -f macos.mk) || exit 1; \
-	done
-
-solaris:
-	for i in $(DIRS); do \
-		(cd $$i && $(MAKE) -f solaris.mk) || exit 1; \
+		(cd $$i && echo "cleaning $$i" && $(MAKE) clean) || exit 1; \
 	done

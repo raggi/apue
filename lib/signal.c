@@ -14,9 +14,7 @@ signal(int signo, Sigfunc *func)
 		act.sa_flags |= SA_INTERRUPT;
 #endif
 	} else {
-#ifdef	SA_RESTART
 		act.sa_flags |= SA_RESTART;
-#endif
 	}
 	if (sigaction(signo, &act, &oact) < 0)
 		return(SIG_ERR);

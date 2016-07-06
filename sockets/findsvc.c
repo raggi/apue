@@ -1,7 +1,10 @@
 #include "apue.h"
+#if defined(SOLARIS)
+#include <netinet/in.h>
+#endif
 #include <netdb.h>
 #include <arpa/inet.h>
-#if defined(BSD) || defined(MACOS)
+#if defined(BSD)
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
@@ -85,18 +88,12 @@ print_flags(struct addrinfo *aip)
 			printf(" canon");
 		if (aip->ai_flags & AI_NUMERICHOST)
 			printf(" numhost");
-#if defined(AI_NUMERICSERV)
 		if (aip->ai_flags & AI_NUMERICSERV)
 			printf(" numserv");
-#endif
-#if defined(AI_V4MAPPED)
 		if (aip->ai_flags & AI_V4MAPPED)
 			printf(" v4mapped");
-#endif
-#if defined(AI_ALL)
 		if (aip->ai_flags & AI_ALL)
 			printf(" all");
-#endif
 	}
 }
 

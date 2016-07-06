@@ -11,9 +11,7 @@ main(void)
 		err_sys("pipe error");
 	set_fl(fd[1], O_NONBLOCK);
 
-	/*
-	 * Write 1 byte at a time until pipe is full.
-	 */
+	/* write 1 byte at a time until pipe is full */
 	for (n = 0; ; n++) {
 		if ((i = write(fd[1], "a", 1)) != 1) {
 			printf("write ret %d, ", i);

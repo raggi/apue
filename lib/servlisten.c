@@ -15,9 +15,14 @@ serv_listen(const char *name)
 	int					fd, len, err, rval;
 	struct sockaddr_un	un;
 
+	if (strlen(name) >= sizeof(un.sun_path)) {
+		errno = ENAMETOOLONG;
+		return(-1);
+	}
+
 	/* create a UNIX domain stream socket */
 	if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-		return(-1);
+		return(-2);
 
 	unlink(name);	/* in case it already exists */
 
@@ -29,12 +34,12 @@ serv_listen(const char *name)
 
 	/* bind the name to the descriptor */
 	if (bind(fd, (struct sockaddr *)&un, len) < 0) {
-		rval = -2;
+		rval = -3;
 		goto errout;
 	}
 
 	if (listen(fd, QLEN) < 0) {	/* tell kernel we're a server */
-		rval = -3;
+		rval = -4;
 		goto errout;
 	}
 	return(fd);

@@ -27,7 +27,7 @@ do_cmd(char *cmd)		/* execute and time the "cmd" */
 	if ((start = times(&tmsstart)) == -1)	/* starting values */
 		err_sys("times error");
 
-	if ((status = system(cmd)) < 0)		/* execute command */
+	if ((status = system(cmd)) < 0)			/* execute command */
 		err_sys("system() error");
 
 	if ((end = times(&tmsend)) == -1)		/* ending values */
@@ -45,6 +45,7 @@ pr_times(clock_t real, struct tms *tmsstart, struct tms *tmsend)
 	if (clktck == 0)	/* fetch clock ticks per second first time */
 		if ((clktck = sysconf(_SC_CLK_TCK)) < 0)
 			err_sys("sysconf error");
+
 	printf("  real:  %7.2f\n", real / (double) clktck);
 	printf("  user:  %7.2f\n",
 	  (tmsend->tms_utime - tmsstart->tms_utime) / (double) clktck);

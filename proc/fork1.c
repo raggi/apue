@@ -1,6 +1,6 @@
 #include "apue.h"
 
-int		glob = 6;		/* external variable in initialized data */
+int		globvar = 6;		/* external variable in initialized data */
 char	buf[] = "a write to stdout\n";
 
 int
@@ -17,12 +17,13 @@ main(void)
 	if ((pid = fork()) < 0) {
 		err_sys("fork error");
 	} else if (pid == 0) {		/* child */
-		glob++;					/* modify variables */
+		globvar++;				/* modify variables */
 		var++;
 	} else {
 		sleep(2);				/* parent */
 	}
 
-	printf("pid = %d, glob = %d, var = %d\n", getpid(), glob, var);
+	printf("pid = %ld, glob = %d, var = %d\n", (long)getpid(), globvar,
+	  var);
 	exit(0);
 }

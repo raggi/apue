@@ -10,7 +10,7 @@ ns_pipe(const char *name, int fd[2])
 	int					len;
 	struct sockaddr_un	unix_addr;
 
-	if (s_pipe(fd) < 0)		/* create unnamed stream pipe */
+	if (fd_pipe(fd) < 0)		/* create unnamed stream pipe */
 		return(-1);
 
 	unlink(name);	/* remove the name, if it already exists */

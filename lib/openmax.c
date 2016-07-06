@@ -9,8 +9,7 @@ static long	openmax = 0;
 #endif
 
 /*
- * If OPEN_MAX is indeterminate, we're not
- * guaranteed that this is adequate.
+ * If OPEN_MAX is indeterminate, this might be inadequate.
  */
 #define	OPEN_MAX_GUESS	256
 
@@ -26,6 +25,5 @@ open_max(void)
 				err_sys("sysconf error for _SC_OPEN_MAX");
 		}
 	}
-
 	return(openmax);
 }

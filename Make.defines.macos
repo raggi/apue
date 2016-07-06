@@ -3,16 +3,17 @@
 # Definitions required in all program directories to compile and link
 # C programs using gcc.
 
-WKDIR=$(PWD)/..
-CC=clang
+CC=gcc
 COMPILE.c=$(CC) $(CFLAGS) $(CPPFLAGS) -c
-LINK.c=$(CC) $(CFLAGS) $(CPPFLAGS) $(LDDIR) $(LDFLAGS)
-LDDIR=-L../lib
-LDLIBS=../lib/libapue.a
-CFLAGS=-ansi -I$(WKDIR)/include -Wall -DMACOS $(EXTRA)
-
-# Our library that almost every program needs.
-LIB=../libapue.a
+LINK.c=$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+LDFLAGS=
+LDDIR=-L$(ROOT)/lib
+LDLIBS=$(LDDIR) -lapue $(EXTRALIBS)
+CFLAGS=-ansi -I$(ROOT)/include -Wall -DMACOS -D_DARWIN_C_SOURCE $(EXTRA)
+RANLIB=ranlib
+AR=ar
+AWK=awk
+LIBAPUE=$(ROOT)/lib/libapue.a
 
 # Common temp files to delete from each directory.
-TEMPFILES=core core.* *.o temp.* *.out typescript*
+TEMPFILES=core core.* *.o temp.* *.out

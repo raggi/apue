@@ -6,6 +6,7 @@
 extern char **environ;
 
 pthread_mutex_t env_mutex;
+
 static pthread_once_t init_done = PTHREAD_ONCE_INIT;
 
 static void

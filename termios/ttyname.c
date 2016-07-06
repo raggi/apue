@@ -31,15 +31,14 @@ add(char *dirname)
 		return;
 	if (strcmp(dirname, "/dev/fd") == 0)
 		return;
-	ddp = malloc(sizeof(struct devdir));
-	if (ddp == NULL)
+	if ((ddp = malloc(sizeof(struct devdir))) == NULL)
 		return;
 
-	ddp->d_name = strdup(dirname);
-	if (ddp->d_name == NULL) {
+	if ((ddp->d_name = strdup(dirname)) == NULL) {
 		free(ddp);
 		return;
 	}
+
 	ddp->d_next = NULL;
 	if (tail == NULL) {
 		head = ddp;

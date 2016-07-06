@@ -1,7 +1,4 @@
 #include "apue.h"
-#ifdef MACOS
-#include <sys/uio.h>
-#endif
 #include <sys/socket.h>
 
 /* size of control buffer to send/recv one file descriptor */
@@ -26,6 +23,7 @@ send_fd(int fd, int fd_to_send)
 	msg.msg_iovlen  = 1;
 	msg.msg_name    = NULL;
 	msg.msg_namelen = 0;
+
 	if (fd_to_send < 0) {
 		msg.msg_control    = NULL;
 		msg.msg_controllen = 0;
@@ -43,6 +41,7 @@ send_fd(int fd, int fd_to_send)
 		*(int *)CMSG_DATA(cmptr) = fd_to_send;		/* the fd to pass */
 		buf[1] = 0;		/* zero status means OK */
 	}
+
 	buf[0] = 0;			/* null byte flag to recv_fd() */
 	if (sendmsg(fd, &msg, 0) != 2)
 		return(-1);

@@ -53,6 +53,7 @@ loop(int ptym, int ignoreeof)
 	 */
 	if (sigcaught == 0)	/* tell child if it didn't send us the signal */
 		kill(child, SIGTERM);
+
 	/*
 	 * Parent returns to caller.
 	 */

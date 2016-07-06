@@ -7,7 +7,7 @@
 #include <stdarg.h>		/* ISO C variable arguments */
 #include <syslog.h>
 
-static void	log_doit(int, int, const char *, va_list ap);
+static void	log_doit(int, int, int, const char *, va_list ap);
 
 /*
  * Caller must define and set this: nonzero if
@@ -35,7 +35,7 @@ log_ret(const char *fmt, ...)
 	va_list		ap;
 
 	va_start(ap, fmt);
-	log_doit(1, LOG_ERR, fmt, ap);
+	log_doit(1, errno, LOG_ERR, fmt, ap);
 	va_end(ap);
 }
 
@@ -49,7 +49,7 @@ log_sys(const char *fmt, ...)
 	va_list		ap;
 
 	va_start(ap, fmt);
-	log_doit(1, LOG_ERR, fmt, ap);
+	log_doit(1, errno, LOG_ERR, fmt, ap);
 	va_end(ap);
 	exit(2);
 }
@@ -64,7 +64,7 @@ log_msg(const char *fmt, ...)
 	va_list		ap;
 
 	va_start(ap, fmt);
-	log_doit(0, LOG_ERR, fmt, ap);
+	log_doit(0, 0, LOG_ERR, fmt, ap);
 	va_end(ap);
 }
 
@@ -78,7 +78,23 @@ log_quit(const char *fmt, ...)
 	va_list		ap;
 
 	va_start(ap, fmt);
-	log_doit(0, LOG_ERR, fmt, ap);
+	log_doit(0, 0, LOG_ERR, fmt, ap);
+	va_end(ap);
+	exit(2);
+}
+
+/*
+ * Fatal error related to a system call.
+ * Error number passed as an explicit parameter.
+ * Print a message and terminate.
+ */
+void
+log_exit(int error, const char *fmt, ...)
+{
+	va_list		ap;
+
+	va_start(ap, fmt);
+	log_doit(1, error, LOG_ERR, fmt, ap);
 	va_end(ap);
 	exit(2);
 }
@@ -88,22 +104,21 @@ log_quit(const char *fmt, ...)
  * Caller specifies "errnoflag" and "priority".
  */
 static void
-log_doit(int errnoflag, int priority, const char *fmt, va_list ap)
+log_doit(int errnoflag, int error, int priority, const char *fmt,
+         va_list ap)
 {
-	int		errno_save;
 	char	buf[MAXLINE];
 
-	errno_save = errno;		/* value caller might want printed */
-	vsnprintf(buf, MAXLINE, fmt, ap);
+	vsnprintf(buf, MAXLINE-1, fmt, ap);
 	if (errnoflag)
-		snprintf(buf+strlen(buf), MAXLINE-strlen(buf), ": %s",
-		  strerror(errno_save));
+		snprintf(buf+strlen(buf), MAXLINE-strlen(buf)-1, ": %s",
+		  strerror(error));
 	strcat(buf, "\n");
 	if (log_to_stderr) {
 		fflush(stdout);
 		fputs(buf, stderr);
 		fflush(stderr);
 	} else {
-		syslog(priority, buf);
+		syslog(priority, "%s", buf);
 	}
 }

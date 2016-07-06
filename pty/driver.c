@@ -7,9 +7,9 @@ do_driver(char *driver)
 	int		pipe[2];
 
 	/*
-	 * Create a stream pipe to communicate with the driver.
+	 * Create a full-duplex pipe to communicate with the driver.
 	 */
-	if (s_pipe(pipe) < 0)
+	if (fd_pipe(pipe) < 0)
 		err_sys("can't create stream pipe");
 
 	if ((child = fork()) < 0) {

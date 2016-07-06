@@ -45,11 +45,8 @@ main(int argc, char *argv[])
 	sigemptyset(&sa.sa_mask);
 	if (sigaction(SIGALRM, &sa, NULL) < 0)
 		err_sys("sigaction error");
-	hint.ai_flags = 0;
-	hint.ai_family = 0;
+	memset(&hint, 0, sizeof(hint));
 	hint.ai_socktype = SOCK_DGRAM;
-	hint.ai_protocol = 0;
-	hint.ai_addrlen = 0;
 	hint.ai_canonname = NULL;
 	hint.ai_addr = NULL;
 	hint.ai_next = NULL;

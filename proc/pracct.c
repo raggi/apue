@@ -1,18 +1,27 @@
 #include "apue.h"
 #include <sys/acct.h>
 
-#ifdef HAS_SA_STAT
+#if defined(BSD)	/* different structure in FreeBSD */
+#define acct acctv2
+#define ac_flag ac_trailer.ac_flag
+#define FMT "%-*.*s  e = %.0f, chars = %.0f, %c %c %c %c\n"
+#elif defined(HAS_AC_STAT)
 #define FMT "%-*.*s  e = %6ld, chars = %7ld, stat = %3u: %c %c %c %c\n"
 #else
 #define FMT "%-*.*s  e = %6ld, chars = %7ld, %c %c %c %c\n"
 #endif
-#ifndef HAS_ACORE
+#if defined(LINUX)
+#define acct acct_v3	/* different structure in Linux */
+#endif
+
+#if !defined(HAS_ACORE)
 #define ACORE 0
 #endif
-#ifndef HAS_AXSIG
+#if !defined(HAS_AXSIG)
 #define AXSIG 0
 #endif
 
+#if !defined(BSD)
 static unsigned long
 compt2ulong(comp_t comptime)	/* convert comp_t to unsigned long */
 {
@@ -25,6 +34,8 @@ compt2ulong(comp_t comptime)	/* convert comp_t to unsigned long */
 		val *= 8;
 	return(val);
 }
+#endif
+
 int
 main(int argc, char *argv[])
 {
@@ -38,8 +49,12 @@ main(int argc, char *argv[])
 	while (fread(&acdata, sizeof(acdata), 1, fp) == 1) {
 		printf(FMT, (int)sizeof(acdata.ac_comm),
 			(int)sizeof(acdata.ac_comm), acdata.ac_comm,
+#if defined(BSD)
+			acdata.ac_etime, acdata.ac_io,
+#else
 			compt2ulong(acdata.ac_etime), compt2ulong(acdata.ac_io),
-#ifdef HAS_SA_STAT
+#endif
+#if defined(HAS_AC_STAT)
 			(unsigned char) acdata.ac_stat,
 #endif
 			acdata.ac_flag & ACORE ? 'D' : ' ',

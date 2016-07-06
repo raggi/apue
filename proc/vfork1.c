@@ -1,6 +1,6 @@
 #include "apue.h"
 
-int		glob = 6;		/* external variable in initialized data */
+int		globvar = 6;		/* external variable in initialized data */
 
 int
 main(void)
@@ -13,14 +13,13 @@ main(void)
 	if ((pid = vfork()) < 0) {
 		err_sys("vfork error");
 	} else if (pid == 0) {		/* child */
-		glob++;					/* modify parent's variables */
+		globvar++;				/* modify parent's variables */
 		var++;
 		_exit(0);				/* child terminates */
 	}
 
-	/*
-	 * Parent continues here.
-	 */
-	printf("pid = %d, glob = %d, var = %d\n", getpid(), glob, var);
+	/* parent continues here */
+	printf("pid = %ld, glob = %d, var = %d\n", (long)getpid(), globvar,
+	  var);
 	exit(0);
 }

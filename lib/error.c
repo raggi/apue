@@ -34,6 +34,21 @@ err_sys(const char *fmt, ...)
 }
 
 /*
+ * Nonfatal error unrelated to a system call.
+ * Error code passed as explict parameter.
+ * Print a message and return.
+ */
+void
+err_cont(int error, const char *fmt, ...)
+{
+	va_list		ap;
+
+	va_start(ap, fmt);
+	err_doit(1, error, fmt, ap);
+	va_end(ap);
+}
+
+/*
  * Fatal error unrelated to a system call.
  * Error code passed as explict parameter.
  * Print a message and terminate.
@@ -103,9 +118,9 @@ err_doit(int errnoflag, int error, const char *fmt, va_list ap)
 {
 	char	buf[MAXLINE];
 
-	vsnprintf(buf, MAXLINE, fmt, ap);
+	vsnprintf(buf, MAXLINE-1, fmt, ap);
 	if (errnoflag)
-		snprintf(buf+strlen(buf), MAXLINE-strlen(buf), ": %s",
+		snprintf(buf+strlen(buf), MAXLINE-strlen(buf)-1, ": %s",
 		  strerror(error));
 	strcat(buf, "\n");
 	fflush(stdout);		/* in case stdout and stderr are the same */

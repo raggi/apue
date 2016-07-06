@@ -3,14 +3,14 @@
 #include <sys/select.h>
 
 unsigned
-sleep(unsigned nsec)
+sleep(unsigned seconds)
 {
 	int n;
 	unsigned slept;
 	time_t start, end;
 	struct timeval tv;
 
-	tv.tv_sec = nsec;
+	tv.tv_sec = seconds;
 	tv.tv_usec = 0;
 	time(&start);
 	n = select(0, NULL, NULL, NULL, &tv);
@@ -18,7 +18,7 @@ sleep(unsigned nsec)
 		return(0);
 	time(&end);
 	slept = end - start;
-	if (slept >= nsec)
+	if (slept >= seconds)
 		return(0);
-	return(nsec - slept);
+	return(seconds - slept);
 }

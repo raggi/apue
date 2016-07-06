@@ -1,8 +1,5 @@
 #include "apue.h"
 #include <termios.h>
-#ifndef	TIOCGWINSZ
-#include <sys/ioctl.h>	/* for struct winsize */
-#endif
 
 #ifdef LINUX
 #define OPTSTR "+d:einv"

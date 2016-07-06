@@ -16,6 +16,7 @@ main()
 		sleep(2);
 		_exit(0);
 	}
+
 	pause();	/* parent */
 	exit(0);
 }
@@ -27,9 +28,12 @@ sig_cld(int signo)	/* interrupts pause() */
 	int		status;
 
 	printf("SIGCLD received\n");
+
 	if (signal(SIGCLD, sig_cld) == SIG_ERR)	/* reestablish handler */
 		perror("signal error");
+
 	if ((pid = wait(&status)) < 0)		/* fetch child status */
 		perror("wait error");
+
 	printf("pid = %d\n", pid);
 }

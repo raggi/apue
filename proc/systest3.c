@@ -10,6 +10,7 @@ main(int argc, char *argv[])
 
 	if ((status = system(argv[1])) < 0)
 		err_sys("system() error");
+
 	pr_exit(status);
 
 	exit(0);

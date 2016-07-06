@@ -38,7 +38,7 @@ daemonize(const char *cmd)
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	if (sigaction(SIGHUP, &sa, NULL) < 0)
-		err_quit("%s: can't ignore SIGHUP");
+		err_quit("%s: can't ignore SIGHUP", cmd);
 	if ((pid = fork()) < 0)
 		err_quit("%s: can't fork", cmd);
 	else if (pid != 0) /* parent */
@@ -49,7 +49,7 @@ daemonize(const char *cmd)
 	 * we won't prevent file systems from being unmounted.
 	 */
 	if (chdir("/") < 0)
-		err_quit("%s: can't change directory to /");
+		err_quit("%s: can't change directory to /", cmd);
 
 	/*
 	 * Close all open file descriptors.

@@ -1,8 +1,5 @@
 #include "apue.h"
 #include <termios.h>
-#ifndef	TIOCGWINSZ
-#include <sys/ioctl.h>
-#endif
 
 pid_t
 pty_fork(int *ptrfdm, char *slave_name, int slave_namesz,
@@ -38,7 +35,7 @@ pty_fork(int *ptrfdm, char *slave_name, int slave_namesz,
 			err_sys("can't open slave pty");
 		close(fdm);		/* all done with master in child */
 
-#if	defined(TIOCSCTTY)
+#if	defined(BSD)
 		/*
 		 * TIOCSCTTY is the BSD way to acquire a controlling terminal.
 		 */

@@ -27,9 +27,7 @@ queue_init(struct queue *qp)
 	err = pthread_rwlock_init(&qp->q_lock, NULL);
 	if (err != 0)
 		return(err);
-
 	/* ... continue initialization ... */
-
 	return(0);
 }
 
@@ -78,10 +76,11 @@ job_remove(struct queue *qp, struct job *jp)
 		qp->q_head = jp->j_next;
 		if (qp->q_tail == jp)
 			qp->q_tail = NULL;
+		else
+			jp->j_next->j_prev = jp->j_prev;
 	} else if (jp == qp->q_tail) {
 		qp->q_tail = jp->j_prev;
-		if (qp->q_head == jp)
-			qp->q_head = NULL;
+		jp->j_prev->j_next = jp->j_next;
 	} else {
 		jp->j_prev->j_next = jp->j_next;
 		jp->j_next->j_prev = jp->j_prev;

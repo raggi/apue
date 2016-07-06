@@ -8,8 +8,8 @@ struct foo {
 void
 printfoo(const char *s, const struct foo *fp)
 {
-	printf(s);
-	printf("  structure at 0x%x\n", (unsigned)fp);
+	fputs(s, stdout);
+	printf("  structure at 0x%lx\n", (unsigned long)fp);
 	printf("  foo.a = %d\n", fp->a);
 	printf("  foo.b = %d\n", fp->b);
 	printf("  foo.c = %d\n", fp->c);

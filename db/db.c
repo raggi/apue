@@ -19,8 +19,8 @@
  * The following definitions are for hash chains and free
  * list chain in the index file.
  */
-#define PTR_SZ        6	/* size of ptr field in hash chain */
-#define PTR_MAX  999999	/* max file offset = 10**PTR_SZ - 1 */
+#define PTR_SZ        7	/* size of ptr field in hash chain */
+#define PTR_MAX 9999999	/* max file offset = 10**PTR_SZ - 1 */
 #define NHASH_DEF	 137	/* default hash table size */
 #define FREE_OFF      0	/* free list offset in index file */
 #define HASH_OFF PTR_SZ	/* hash table offset in index file */
@@ -569,20 +569,18 @@ _db_writeidx(DB *db, const char *key,
              off_t offset, int whence, off_t ptrval)
 {
 	struct iovec	iov[2];
-	char			asciiptrlen[PTR_SZ + IDXLEN_SZ +1];
+	char			asciiptrlen[PTR_SZ + IDXLEN_SZ + 1];
 	int				len;
-	char			*fmt;
 
 	if ((db->ptrval = ptrval) < 0 || ptrval > PTR_MAX)
 		err_quit("_db_writeidx: invalid ptr: %d", ptrval);
-	if (sizeof(off_t) == sizeof(long long))
-		fmt = "%s%c%lld%c%d\n";
-	else
-		fmt = "%s%c%ld%c%d\n";
-	sprintf(db->idxbuf, fmt, key, SEP, db->datoff, SEP, db->datlen);
-	if ((len = strlen(db->idxbuf)) < IDXLEN_MIN || len > IDXLEN_MAX)
+	sprintf(db->idxbuf, "%s%c%lld%c%ld\n", key, SEP,
+	  (long long)db->datoff, SEP, (long)db->datlen);
+	len = strlen(db->idxbuf);
+	if (len < IDXLEN_MIN || len > IDXLEN_MAX)
 		err_dump("_db_writeidx: invalid length");
-	sprintf(asciiptrlen, "%*ld%*d", PTR_SZ, ptrval, IDXLEN_SZ, len);
+	sprintf(asciiptrlen, "%*lld%*d", PTR_SZ, (long long)ptrval,
+	  IDXLEN_SZ, len);
 
 	/*
 	 * If we're appending, we have to lock before doing the lseek
@@ -624,7 +622,7 @@ _db_writeptr(DB *db, off_t offset, off_t ptrval)
 
 	if (ptrval < 0 || ptrval > PTR_MAX)
 		err_quit("_db_writeptr: invalid ptr: %d", ptrval);
-	sprintf(asciiptr, "%*ld", PTR_SZ, ptrval);
+	sprintf(asciiptr, "%*lld", PTR_SZ, (long long)ptrval);
 
 	if (lseek(db->idxfd, offset, SEEK_SET) == -1)
 		err_dump("_db_writeptr: lseek error to ptr field");

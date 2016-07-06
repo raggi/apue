@@ -12,23 +12,17 @@ initserver(int type, const struct sockaddr *addr, socklen_t alen,
 	if ((fd = socket(addr->sa_family, type, 0)) < 0)
 		return(-1);
 	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse,
-	  sizeof(int)) < 0) {
-		err = errno;
+	  sizeof(int)) < 0)
 		goto errout;
-	}
-	if (bind(fd, addr, alen) < 0) {
-		err = errno;
+	if (bind(fd, addr, alen) < 0)
 		goto errout;
-	}
-	if (type == SOCK_STREAM || type == SOCK_SEQPACKET) {
-		if (listen(fd, qlen) < 0) {
-			err = errno;
+	if (type == SOCK_STREAM || type == SOCK_SEQPACKET)
+		if (listen(fd, qlen) < 0)
 			goto errout;
-		}
-	}
 	return(fd);
 
 errout:
+	err = errno;
 	close(fd);
 	errno = err;
 	return(-1);

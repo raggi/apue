@@ -3,26 +3,28 @@
 #include <limits.h>
 
 #ifdef	PATH_MAX
-static int	pathmax = PATH_MAX;
+static long	pathmax = PATH_MAX;
 #else
-static int	pathmax = 0;
+static long	pathmax = 0;
 #endif
 
-#define SUSV3	200112L
-
 static long	posix_version = 0;
+static long	xsi_version = 0;
 
 /* If PATH_MAX is indeterminate, no guarantee this is adequate */
 #define	PATH_MAX_GUESS	1024
 
 char *
-path_alloc(int *sizep) /* also return allocated size, if nonnull */
+path_alloc(size_t *sizep) /* also return allocated size, if nonnull */
 {
 	char	*ptr;
-	int	size;
+	size_t	size;
 
 	if (posix_version == 0)
 		posix_version = sysconf(_SC_VERSION);
+
+	if (xsi_version == 0)
+		xsi_version = sysconf(_SC_XOPEN_VERSION);
 
 	if (pathmax == 0) {		/* first time through */
 		errno = 0;
@@ -35,7 +37,12 @@ path_alloc(int *sizep) /* also return allocated size, if nonnull */
 			pathmax++;		/* add one since it's relative to root */
 		}
 	}
-	if (posix_version < SUSV3)
+
+	/*
+	 * Before POSIX.1-2001, we aren't guaranteed that PATH_MAX includes
+	 * the terminating null byte.  Same goes for XPG3.
+	 */
+	if ((posix_version < 200112L) && (xsi_version < 4))
 		size = pathmax + 1;
 	else
 		size = pathmax;

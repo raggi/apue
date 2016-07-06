@@ -7,7 +7,7 @@ sig_alrm(int signo)
 }
 
 unsigned int
-sleep(unsigned int nsecs)
+sleep(unsigned int seconds)
 {
 	struct sigaction	newact, oldact;
 	sigset_t			newmask, oldmask, suspmask;
@@ -24,16 +24,21 @@ sleep(unsigned int nsecs)
 	sigaddset(&newmask, SIGALRM);
 	sigprocmask(SIG_BLOCK, &newmask, &oldmask);
 
-	alarm(nsecs);
-
+	alarm(seconds);
 	suspmask = oldmask;
-	sigdelset(&suspmask, SIGALRM);	/* make sure SIGALRM isn't blocked */
-	sigsuspend(&suspmask);			/* wait for any signal to be caught */
+
+	/* make sure SIGALRM isn't blocked */
+	sigdelset(&suspmask, SIGALRM);
+
+	/* wait for any signal to be caught */
+	sigsuspend(&suspmask);
 
 	/* some signal has been caught, SIGALRM is now blocked */
 
 	unslept = alarm(0);
-	sigaction(SIGALRM, &oldact, NULL);	/* reset previous action */
+
+	/* reset previous action */
+	sigaction(SIGALRM, &oldact, NULL);
 
 	/* reset signal mask, which unblocks SIGALRM */
 	sigprocmask(SIG_SETMASK, &oldmask, NULL);

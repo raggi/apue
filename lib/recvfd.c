@@ -1,12 +1,14 @@
 #include "apue.h"
-#ifdef MACOS
-#include <sys/uio.h>
-#endif
 #include <sys/socket.h>		/* struct msghdr */
-
 
 /* size of control buffer to send/recv one file descriptor */
 #define	CONTROLLEN	CMSG_LEN(sizeof(int))
+
+#ifdef LINUX
+#define RELOP <
+#else
+#define RELOP !=
+#endif
 
 static struct cmsghdr	*cmptr = NULL;		/* malloc'ed first time */
 
@@ -37,7 +39,8 @@ recv_fd(int fd, ssize_t (*userfunc)(int, const void *, size_t))
 		msg.msg_control    = cmptr;
 		msg.msg_controllen = CONTROLLEN;
 		if ((nr = recvmsg(fd, &msg, 0)) < 0) {
-			err_sys("recvmsg error");
+			err_ret("recvmsg error");
+			return(-1);
 		} else if (nr == 0) {
 			err_ret("connection closed by server");
 			return(-1);
@@ -54,7 +57,7 @@ recv_fd(int fd, ssize_t (*userfunc)(int, const void *, size_t))
 					err_dump("message format error");
  				status = *ptr & 0xFF;	/* prevent sign extension */
  				if (status == 0) {
-					if (msg.msg_controllen != CONTROLLEN)
+					if (msg.msg_controllen RELOP CONTROLLEN)
 						err_dump("status = 0 but no fd");
 					newfd = *(int *)CMSG_DATA(cmptr);
 				} else {

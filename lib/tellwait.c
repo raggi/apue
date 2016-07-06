@@ -21,9 +21,7 @@ TELL_WAIT(void)
 	sigaddset(&newmask, SIGUSR1);
 	sigaddset(&newmask, SIGUSR2);
 
-	/*
-	 * Block SIGUSR1 and SIGUSR2, and save current signal mask.
-	 */
+	/* Block SIGUSR1 and SIGUSR2, and save current signal mask */
 	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0)
 		err_sys("SIG_BLOCK error");
 }
@@ -41,9 +39,7 @@ WAIT_PARENT(void)
 		sigsuspend(&zeromask);	/* and wait for parent */
 	sigflag = 0;
 
-	/*
-	 * Reset signal mask to original value.
-	 */
+	/* Reset signal mask to original value */
 	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
 		err_sys("SIG_SETMASK error");
 }
@@ -61,9 +57,7 @@ WAIT_CHILD(void)
 		sigsuspend(&zeromask);	/* and wait for child */
 	sigflag = 0;
 
-	/*
-	 * Reset signal mask to original value.
-	 */
+	/* Reset signal mask to original value */
 	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
 		err_sys("SIG_SETMASK error");
 }

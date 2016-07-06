@@ -12,7 +12,7 @@
 #define HOST_NAME_MAX 256
 #endif
 
-extern int initserver(int, struct sockaddr *, socklen_t, int);
+extern int initserver(int, const struct sockaddr *, socklen_t, int);
 
 void
 serve(int sockfd)
@@ -20,9 +20,9 @@ serve(int sockfd)
 	int		clfd, status;
 	pid_t	pid;
 
+	set_cloexec(sockfd);
 	for (;;) {
-		clfd = accept(sockfd, NULL, NULL);
-		if (clfd < 0) {
+		if ((clfd = accept(sockfd, NULL, NULL)) < 0) {
 			syslog(LOG_ERR, "ruptimed: accept error: %s",
 			  strerror(errno));
 			exit(1);
@@ -65,22 +65,16 @@ main(int argc, char *argv[])
 
 	if (argc != 1)
 		err_quit("usage: ruptimed");
-#ifdef _SC_HOST_NAME_MAX
-	n = sysconf(_SC_HOST_NAME_MAX);
-	if (n < 0)	/* best guess */
-#endif
-		n = HOST_NAME_MAX;
-	host = malloc(n);
-	if (host == NULL)
+	if ((n = sysconf(_SC_HOST_NAME_MAX)) < 0)
+		n = HOST_NAME_MAX;	/* best guess */
+	if ((host = malloc(n)) == NULL)
 		err_sys("malloc error");
 	if (gethostname(host, n) < 0)
 		err_sys("gethostname error");
 	daemonize("ruptimed");
+	memset(&hint, 0, sizeof(hint));
 	hint.ai_flags = AI_CANONNAME;
-	hint.ai_family = 0;
 	hint.ai_socktype = SOCK_STREAM;
-	hint.ai_protocol = 0;
-	hint.ai_addrlen = 0;
 	hint.ai_canonname = NULL;
 	hint.ai_addr = NULL;
 	hint.ai_next = NULL;

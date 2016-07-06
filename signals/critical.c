@@ -26,7 +26,7 @@ main(void)
 		printf("\nSIGQUIT pending\n");
 
 	/*
-	 * Reset signal mask which unblocks SIGQUIT.
+	 * Restore signal mask which unblocks SIGQUIT.
 	 */
 	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
 		err_sys("SIG_SETMASK error");
